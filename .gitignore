@@ -113,3 +113,6 @@ wheels/
 
 # Test data (if not needed)
 test_data/
+
+# Render specific
+.render/
