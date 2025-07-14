@@ -1,0 +1,21 @@
+# Core YouTube and Video Processing
+youtube-transcript-api>=0.6.1
+pytube>=15.0.0
+yt-dlp>=2023.12.30
+
+# AI/ML Libraries
+faster-whisper>=0.10.0
+transformers>=4.38.0
+torch>=2.0.0
+sentence-transformers>=2.2.2
+
+# Language Processing
+langdetect>=1.0.9
+googletrans==4.0.0rc1
+
+# PDF Processing
+pymupdf>=1.23.0
+
+# Utilities
+rich>=13.7.0
+python-dotenv>=1.0.1
