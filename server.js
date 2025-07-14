@@ -26,6 +26,7 @@ const corsOptions = {
       'http://localhost:3000',
       'http://localhost:3001',
       'https://smart-summary-q-a-backend.onrender.com',
+      'https://rishith2903.github.io',
       process.env.FRONTEND_URL
     ].filter(Boolean);
 
