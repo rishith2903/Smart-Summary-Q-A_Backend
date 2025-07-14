@@ -323,7 +323,5 @@ The API uses consistent error response format:
 4. Run tests: `node tests/run-all-tests.js`
 5. Submit a pull request
 
-## 📄 License
 
-MIT License - see LICENSE file for details
 #
