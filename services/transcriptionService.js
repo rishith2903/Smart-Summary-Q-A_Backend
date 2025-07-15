@@ -245,7 +245,7 @@ class TranscriptionService {
 
     // Check if audio file exists first
     if (!fs.existsSync(audioPath)) {
-      throw new Error(`Audio file not found: ${audioPath}`);
+      throw new Error('Audio file not found');
     }
 
     // Check if Python script exists
@@ -258,9 +258,10 @@ class TranscriptionService {
     logger.info(`Script: ${scriptPath}`);
 
     return new Promise((resolve, reject) => {
-      // Use tiny model for faster processing
-      const args = [scriptPath, audioPath, 'false', 'tiny'];
-      logger.info(`Executing: python ${args.join(' ')}`);
+      // Use tiny model for fastest processing in tests/development
+      const model = process.env.NODE_ENV === 'test' ? 'tiny' : 'base';
+      const args = [scriptPath, audioPath, 'false', model];
+      logger.info(`Executing: python ${args.join(' ')} (model: ${model})`);
 
       const python = spawn('python', args, {
         stdio: ['pipe', 'pipe', 'pipe'],
@@ -272,15 +273,16 @@ class TranscriptionService {
       let stderr = '';
       let isResolved = false;
 
-      // Set timeout to prevent hanging (3 minutes for tiny model)
+      // Shorter timeout for tests, longer for production
+      const timeoutDuration = process.env.NODE_ENV === 'test' ? 45000 : 180000; // 45s for tests, 3min for production
       const timeout = setTimeout(() => {
         if (!isResolved) {
           isResolved = true;
-          logger.warn('⏰ Whisper transcription timeout - killing process');
+          logger.warn(`⏰ Whisper transcription timeout (${timeoutDuration/1000}s) - killing process`);
           python.kill('SIGKILL');
-          reject(new Error('Whisper transcription timeout (3 minutes)'));
+          reject(new Error(`Whisper transcription timeout (${timeoutDuration/1000} seconds)`));
         }
-      }, 180000); // 3 minutes
+      }, timeoutDuration);
 
       python.stdout.on('data', (data) => {
         const chunk = data.toString();

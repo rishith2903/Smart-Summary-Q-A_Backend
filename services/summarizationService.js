@@ -1,4 +1,3 @@
-const { pipeline } = require('@xenova/transformers');
 const { createSummarizationError, logger } = require('../utils/errorHandler');
 
 class SummarizationService {
@@ -7,6 +6,7 @@ class SummarizationService {
     this.isInitialized = false;
     this.maxChunkSize = 1000;
     this.overlap = 100;
+    this.transformers = null;
   }
 
   // Initialize the summarization model
@@ -15,6 +15,14 @@ class SummarizationService {
 
     try {
       logger.info('Initializing summarization model...');
+
+      // Try to load transformers dynamically
+      try {
+        this.transformers = await import('@xenova/transformers');
+        logger.info('Transformers loaded successfully');
+      } catch (error) {
+        logger.warn('Transformers not available, using fallback summarization');
+      }
 
       // For now, use a simple extractive summarization approach
       // In production, you would use actual AI models

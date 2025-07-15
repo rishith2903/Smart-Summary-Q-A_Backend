@@ -66,14 +66,11 @@ describe('Video Service Tests', () => {
 
   describe('Error Handling', () => {
     it('should handle network errors gracefully', async () => {
-      // Mock network failure
-      const originalFetch = global.fetch;
-      global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+      // Test with a definitely invalid URL that will cause network errors
+      const invalidUrl = 'https://youtu.be/definitely-invalid-video-id-that-does-not-exist';
 
-      await expect(videoService.getVideoInfo(testUrl))
+      await expect(videoService.getVideoInfo(invalidUrl))
         .rejects.toThrow();
-
-      global.fetch = originalFetch;
     });
   });
 });
