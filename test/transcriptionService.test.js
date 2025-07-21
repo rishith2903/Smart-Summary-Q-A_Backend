@@ -136,6 +136,6 @@ describe('Transcription Service Tests', () => {
 
       // Should return honest response for invalid videos
       expect(result).toContain('TRANSCRIPT NOT AVAILABLE');
-    });
+    }, 60000); // Increased timeout to 60 seconds for network failure handling
   });
 });

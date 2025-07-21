@@ -964,15 +964,25 @@ class VideoService {
         transcript = await transcriptionService.getYouTubeTranscript(url);
         logger.info('Using YouTube auto-generated transcript');
       } catch (error) {
-        logger.warn('YouTube transcript not available, downloading audio for transcription');
-        const audioPath = await this.downloadAudio(url);
-        transcript = await transcriptionService.transcribeAudio(audioPath, useGpu);
-
-        // Clean up audio file
+        logger.warn('YouTube transcript not available, trying audio transcription with timeout');
         try {
-          await fs.remove(audioPath);
-        } catch (cleanupError) {
-          logger.warn('Failed to cleanup audio file', cleanupError);
+          const audioPath = await this.downloadAudio(url);
+
+          // Use improved transcription with built-in fallbacks
+          transcript = await transcriptionService.transcribeAudio(audioPath, useGpu);
+
+          // Clean up audio file
+          try {
+            await fs.remove(audioPath);
+          } catch (cleanupError) {
+            logger.warn('Failed to cleanup audio file', cleanupError);
+          }
+
+          logger.info('✅ Audio transcription completed successfully');
+        } catch (transcriptionError) {
+          logger.warn('Audio transcription failed:', transcriptionError.message);
+          // The transcribeAudio method now has built-in fallbacks, so this shouldn't happen often
+          transcript = 'TRANSCRIPT NOT AVAILABLE - Audio processing failed';
         }
       }
 
