@@ -1,4 +1,3 @@
-const { pipeline } = require('@xenova/transformers');
 const translationService = require('./translationService');
 const { createQAError, logger } = require('../utils/errorHandler');
 
@@ -6,6 +5,7 @@ class QAService {
   constructor() {
     this.qaModel = null;
     this.isInitialized = false;
+    this.transformers = null;
   }
 
   // Initialize the Q&A model
@@ -14,6 +14,14 @@ class QAService {
 
     try {
       logger.info('Initializing Q&A model...');
+
+      // Try to load transformers dynamically
+      try {
+        this.transformers = await import('@xenova/transformers');
+        logger.info('Transformers loaded successfully for Q&A');
+      } catch (error) {
+        logger.warn('Transformers not available, using fallback Q&A');
+      }
 
       // For now, use extractive Q&A approach
       // In production, you would use actual AI models
